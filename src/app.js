@@ -3,7 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const router = require("./routes");
-
+const notFound = require('./middlewares/notFound');
 
 //crée l'application express
 const app = express();
@@ -17,6 +17,9 @@ app.use(morgan('dev'));
 
 //chercher toutes mes routes (sous la route /monApi)
 app.use('/monapi', router);
+
+//je recupere la requet qui n'a pas trouvé de route
+app.use(notFound);
 
 //export app
 module.exports = app;
