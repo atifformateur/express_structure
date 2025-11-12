@@ -131,6 +131,39 @@ exports.updateProduct = async (req, res) => {
     }
 }
 
+exports.deleteProduct = async (req,res) => {
+    try{
+        const id = Number(req.params.id);
+
+        //recherche du produit en db
+        const product = await Product.findByPk(id);
+
+        if(!product){
+            res.status(404).json({
+                success:false,
+                message:'produit pas la en vacance',
+                data:null
+            })
+        }
+
+        await product.destroy();
+
+        res.status(204).json({
+            succes:true,
+            message:' on lui a destroy sa gentille maman',
+            data: null
+        })
+
+    }catch(error){
+        console.log('error sur la suppr de prodcut', error);
+        res.status(500).json({
+            succes:false,
+            message:'error sur delete product',
+            data:null
+        })  
+    }
+}
+
 //logique test
 exports.test = async (req, res) =>{
     try{
