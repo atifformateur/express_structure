@@ -1,40 +1,56 @@
-//ici le controller pour mon crud products
-let productId = 3;
-const products = [
-    {id: 1, name: 'stylo', price: 2},
-    {id: 2, name: 'feutre', price: 3}
-];
+const db = require('../models');
+const Product = db.Product;
 
 //logique d'affichage des produits
-exports.listProducts = (req, res)=>{
-    //recuperation des produits en bdd dans la variable products
-    res.status(200).json({
-        success: true,
-        message: 'liste des produits',
-        data: products
-    });
+exports.listProducts = async (req, res)=>{
+    try{
+        const products = await Product.findAll();
+
+        res.status(200).json({
+            success: true,
+            message: 'liste des produits',
+            data: products
+        });
+    }catch(error){
+        console.log('erreur pour get products', error);
+        res.status(500).json({
+            success:false,
+            message:"error sur get products",
+            data:null
+        })
+    }
 };
 
 //logique affichage d'un produits
-exports.getProductById = (req, res)=>{
-    //number converti de string en nombre
-    const id = Number(req.params.id);
-    //recherche du produit
-    const product = products.find(p => p.id === id);
-    //gestion d'erreur si pas de produit trouvé
-    if(!product){
-        res.status(404).json({
-            success: false,
-            message: "produit non trouvé",
-            data: null
+exports.getProductById = async (req, res)=>{
+    try{
+         //number converti de string en nombre
+        const id = Number(req.params.id);
+        //recherche du produit
+        const product = await Product.findByPk(id);
+        //gestion d'erreur si pas de produit trouvé
+        if(!product){
+            res.status(404).json({
+                success: false,
+                message: "produit non trouvé",
+                data: null
+            })
+        };
+        //200 produit trouvé
+        res.status(200).json({
+            success:true,
+            message: 'produit trouvé',
+            data: product
+        });
+    }catch(error){
+        console.log('error sur find by id product', error);
+        res.status(500).json({
+            succes:false,
+            message:'error sur get by product',
+            data:null
         })
-    };
-    //200 produit trouvé
-    res.status(200).json({
-        success:true,
-        message: 'produit trouvé',
-        data: product
-    });
+    }
+   
 }
 
 //ajout d'un produit
@@ -63,8 +79,26 @@ exports.createProduct = (req, res)=>{
 }
 
 //logique test
-exports.test = (req, res) =>{
-    console.log('route test de mon controller product');
-    res.send('route test de mon controller product');
+exports.test = async (req, res) =>{
+    try{
+        //verifier la connexion 
+        await db.sequelize.authenticate();
+
+        //verifier que le model foncitonne
+        const products = await Product.findAll({limit:1});
+
+        res.status(200).json({
+            success:true,
+            message:'test de ma table product',
+            data: products
+        })
+    }catch(error){
+        console.error('erreur dans le test de product', error);
+        res.status(500).json({
+            success:false,
+            message:'echec lors du test de product',
+            error: error.message
+        })
+    }
 };
 
