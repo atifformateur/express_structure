@@ -54,28 +54,81 @@ exports.getProductById = async (req, res)=>{
 }
 
 //ajout d'un produit
-exports.createProduct = (req, res)=>{
-    const {name, price} = req.body;
+exports.createProduct = async (req, res)=>{
+    try{
+            const {name, price} = req.body;
     
-    if(!name || !price || typeof price !== 'number' ){
-        res.status(400).json({
-            success:false,
-            message:'name string et price int obligatoire',
-            data: null
-        });
-    };
-    //creation d'un objet produit avec id autoincrement
-    const newProduct = {id: productId++, name, price};
-    //injecte l'objet dans le tableau
-    products.push(newProduct);
+        //validation des données
+        if(!name || !price || typeof price !== 'number' ){
+            res.status(400).json({
+                success:false,
+                message:'name string et price int obligatoire',
+                data: null
+            });
+        };
 
-    console.log(products);
+        //verifier que le prix ne soit pas negatif
 
-    res.status(201).json({
-        success: true,
-        message: 'produit crée',
-        data: newProduct
-    })
+        //creation du produit pour la db
+        const newProduct = await Product.create({
+            name: name,
+            price: price
+        })
+    
+        res.status(201).json({
+            success: true,
+            message: 'produit crée',
+            data: newProduct
+        })
+    }catch(error){
+        console.log('error sur creation de product', error);
+        res.status(500).json({
+            succes: false,
+            message:'error sur la creation product',
+            data:null
+        })
+    }
+}
+
+//update d'un produit
+exports.updateProduct = async (req, res) => {
+    try{
+        //number converti de string en nombre
+        const id = Number(req.params.id);
+        const {name, price} = req.body;
+
+        //recherche du produit en db
+        const product = await Product.findByPk(id);
+
+        if(!product){
+            res.status(404).json({
+                success:false,
+                message:'produit pas la en vacance',
+                data:null
+            })
+        }
+        
+        //verification name et price a faire 
+
+        //executer les modfis
+        product.name = name;
+        product.price = price;
+
+        await product.save();
+
+        res.status(200).json({
+            succes:true,
+            message: 'produit ajouté',
+            data: product
+        })
+    }catch(error){
+        console.log('error sur le update de prodcut', error);
+        res.status(500).json({
+            succes:false,
+            message:'error sur update product',
+            data:null
+        })
+    }
 }
 
 //logique test
