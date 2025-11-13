@@ -29,6 +29,44 @@ exports.listBooks = async (req,res) => {
     }
 }
 
+exports.getBookById = async (req, res) => {
+    try {
+        const id = parseId(req.params);
+
+        if(!id){
+            return res.status(400).json({
+                success:false,
+                message:'id non valide',
+                data: null
+            })
+        }
+
+        const book = await Book.findByPk(id);
+        if(!book){
+            console.log('book introuvable!');
+            return res.status(400).json({
+                success: false,
+                message: "book introuvable",
+                data: null
+            })
+        }
+
+        return res.status(200).json({
+            success:true,
+            message:"livre trouvé",
+            data: book
+        })
+
+    } catch (error) {
+        console.error('echec interne lors de laffichage du livre', error);
+        return res.status(500).json({
+            success: false,
+            message: 'erreur interne lors de laffichage du lvire',
+            data: null
+        })
+    }
+}
+
 exports.createdBook = async (req,res) => {
     try {
         
@@ -96,7 +134,6 @@ exports.updateBook = async (req,res) => {
                 data: null
             })
         }
-
         if (typeof req.body.title === "string"){
             book.title = req.body.title.trim();
         }
@@ -106,9 +143,13 @@ exports.updateBook = async (req,res) => {
         if (typeof req.body.dispo === "boolean"){
             book.dispo = req.body.dispo
         }
-        
+        await book.save();
 
-
+        return res.status(200).json({
+            success:true,
+            message:"top reussite",
+            data: book
+        })
     } catch (error) {
         console.error('echec interne lors de la modification du livre', error);
         return res.status(500).json({
@@ -119,10 +160,36 @@ exports.updateBook = async (req,res) => {
     }
 }
 
+exports.deleteBook = async (req, res) => {
+    try {
+        const id = parseId(req.params);
+        if(!id){
+            return res.status(400).json({
+                success:false,
+                message:"id pas bon",
+                data: null
+            })
+        }
 
+        const book = await Book.findByPk(id);
+        if(!book){
+            return res.status(404).json({
+                success:false,
+                message: "livre introuvable",
+                data:null
+            });
+        }
 
-//finir update
+        await book.destroy();
 
-//afficher un book
+        return res.status(204).json();
 
-//delete un book 
+    } catch (error) {
+        console.error('echec interne lors de la suppression du livre', error);
+        return res.status(500).json({
+            success: false,
+            message: 'erreur interne lors de la suppresion du lvire',
+            data: null
+        })
+    }
+}
