@@ -7,6 +7,7 @@ const router = Router();
 //montage des sous routes
 //route produits /monapi/products
 router.use('/products', require('./products.routes'));
+router.use('/books', require('./books.routes'));
 
 //exporte le routeur
 module.exports = router;
