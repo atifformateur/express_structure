@@ -15,7 +15,20 @@ function parseId(params) {
 exports.listBooks = async (req,res) => {
     try {
         //avec l'orm get tous les livres dans ma variable books
-        const books = await Book.findAll({order: [["title", "ASC"]], include: [{ model: Type, as: 'type', attributes: ['id', 'name']}] });
+        const books = await Book.findAll(
+            {
+                order: [
+                    ["title", "ASC"]
+                ], 
+                include: [
+                    { 
+                        model: Type, 
+                        as: 'type', 
+                        attributes: ['id', 'name']
+                    }
+                ] 
+            }
+        );
 
         return res.status(200).json({
             success: true,
@@ -32,6 +45,7 @@ exports.listBooks = async (req,res) => {
     }
 }
 
+//recupere aussi le type des book
 exports.getBookById = async (req, res) => {
     try {
         const id = parseId(req.params);
@@ -44,7 +58,16 @@ exports.getBookById = async (req, res) => {
             })
         }
 
-        const book = await Book.findByPk(id);
+        const book = await Book.findByPk(id, {
+            include: [
+                {
+                    model: Type, 
+                    as: "type", 
+                    attributes: ["id", "name"]
+                }
+            ]
+        });
+
         if(!book){
             console.log('book introuvable!');
             return res.status(400).json({
@@ -70,6 +93,7 @@ exports.getBookById = async (req, res) => {
     }
 }
 
+//voir les modifications a faire pour integrer la relation avec book 
 exports.createdBook = async (req,res) => {
     try {
         
@@ -107,6 +131,7 @@ exports.createdBook = async (req,res) => {
     }
 }
 
+//ici aussi
 exports.updateBook = async (req,res) => {
     try {
         const id =parseId(req.params);
@@ -163,6 +188,7 @@ exports.updateBook = async (req,res) => {
     }
 }
 
+//tout pareil
 exports.deleteBook = async (req, res) => {
     try {
         const id = parseId(req.params);
