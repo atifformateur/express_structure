@@ -1,5 +1,6 @@
 const db = require('../models');
 const Book = db.Book;
+const Type = db.Type;
 const {validateCreateBook, validateUpdateBook} = require('../utils/bookValidation');
 
 function parseId(params) {
@@ -10,9 +11,11 @@ function parseId(params) {
     return id;
 }
 
+//affiche tous les livres
 exports.listBooks = async (req,res) => {
     try {
-        const books = await Book.findAll({order: [["created_at", "DESC"]] });
+        //avec l'orm get tous les livres dans ma variable books
+        const books = await Book.findAll({order: [["title", "ASC"]], include: [{ model: Type, as: 'type', attributes: ['id', 'name']}] });
 
         return res.status(200).json({
             success: true,

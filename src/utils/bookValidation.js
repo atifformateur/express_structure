@@ -1,4 +1,5 @@
 const MAX_LENGTH = 150;
+const { Type } = require('../models');
 
 function validateCreateBook(payLoad){
     const errors = [];
@@ -56,7 +57,23 @@ function validateUpdateBook(payload){
     return validateCreateBook(payload);
 }
 
+async function validateTypeId(typeId) {
+    //que l'id est bien un id
+    if(typeof typeId !== 'number' || !Number.isInteger(typeId) || typeId <= 0){
+        return 'typeId doit etre un id';
+    }
+
+    //je verifie si le Type existe en db
+    const type = await Type.findByPk(typeId);
+    if(!type){
+        return 'typeid ne correspond a aucun type';
+    }
+
+    return null;
+}
+
 module.exports = {
     validateCreateBook,
-    validateUpdateBook
+    validateUpdateBook,
+    validateTypeId
 };

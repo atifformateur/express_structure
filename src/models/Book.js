@@ -5,7 +5,11 @@ const  {Model} = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
     class Book extends Model {
         static associate(models){
-
+            // un book appartient a un seul type
+            Book.belongsTo(models.Type, {
+                as: "type",
+                foreignKey: "type_id"
+            }) 
         }
     }
 
@@ -37,6 +41,14 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.BOOLEAN,
                 allowNull: false,
                 defaultValue: true
+            },
+            type_id: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+                references: {
+                    model: "type",
+                    key: "id"
+                }
             }
         },{
             sequelize,
