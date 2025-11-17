@@ -49,6 +49,13 @@ module.exports = (sequelize, DataTypes) => {
                     model: "type",
                     key: "id"
                 }
+            },
+            cover: {
+                type: DataTypes.STRING(155),
+                allowNull: true,
+                validate: {
+                    len: [1, 155],
+                }
             }
         },{
             sequelize,

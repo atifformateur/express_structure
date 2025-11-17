@@ -257,6 +257,9 @@ exports.uploadCover = async (req, res) => {
         //genere l'url publique de l'image 
         const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
 
+        book.cover = imageUrl;
+        await book.save();
+
         return res.status(200).json({
             success: true,
             message: "upload cover ok ",
