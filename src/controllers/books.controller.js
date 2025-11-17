@@ -222,3 +222,57 @@ exports.deleteBook = async (req, res) => {
         })
     }
 }
+
+exports.uploadCover = async (req, res) => {
+    try {
+        //verifie l'id du book pour voir si il existe
+        const id = parseId(req.params);
+        if(!id){
+            return res.status(400).json({
+                success:false,
+                message: "id incorrect",
+                data: null          
+            })
+        }
+
+        //on peu verifier si book existe maintenant que l'id est ok
+        const book = await Book.findByPk(id);
+        if(!book){
+            return res.status(404).json({
+                success:false,
+                message:'livre introuvable',
+                data:null
+            })
+        }
+
+        //je verifie qu'un fichier a bien été envoyé!
+        if(!req.file){
+            return res.status(404).json({
+                success:false,
+                message:" aucun fichier envoyé (cover absent oublie pas tete de noeud ! )",
+                data: null
+            })
+        }
+
+        //genere l'url publique de l'image 
+        const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+
+        return res.status(200).json({
+            success: true,
+            message: "upload cover ok ",
+            data: {
+                bookId: book.id,
+                filename: req.file.filename,
+                url: imageUrl
+            }
+        })
+
+    } catch (error) {
+        console.error("erreur pendant l'upload d'image", error);
+        return res.status(500).json({
+            success:false,
+            message:"erreur pednant l'upload d'image",
+            data:null
+        });
+    }
+}

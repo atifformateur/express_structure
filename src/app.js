@@ -15,6 +15,9 @@ app.use(express.json());
 //log les request http
 app.use(morgan('dev'));
 
+//rendre accessible (static) mon dossier uploads via l'url
+app.use('/uploads', express.static('uploads'));
+
 //chercher toutes mes routes (sous la route /monApi)
 app.use('/monapi', router);
 
