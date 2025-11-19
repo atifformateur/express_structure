@@ -8,9 +8,7 @@ const router = Router();
 //route produits /monapi/products
 router.use('/products', require('./products.routes'));
 router.use('/books', require('./books.routes'));
+router.use('/auth', require('./auth.routes'));
 
 //exporte le routeur
 module.exports = router;
-
-
-
