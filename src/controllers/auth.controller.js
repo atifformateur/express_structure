@@ -38,7 +38,31 @@ exports.register = async (req, res) => {
     }
 }
 
-exports.login = (req, res) => {
-    console.log('test login');
-    
+exports.login = async (req, res) => {
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+        //stop si jamais payload invalide
+        return res.status(400).json({
+            success:false,
+            errors: errors.array()
+        })
+    }
+
+    //utiliser notre fonction qui verifie les credential
+    const user = await authService.validateCredentials(req.body.email, req.body.password);
+    if(!user){
+        return res.status(401).json({
+            succes: false,
+            message: 'indentifiants pas bon',
+            data: null
+        })
+    }
+
+    const token = authService.generateToken(user);
+    return res.status(200).json({
+        succes:true,
+        message:"connexion réussie",
+        data: {token}
+    })
+ 
 }

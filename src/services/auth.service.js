@@ -26,7 +26,7 @@ async function validateCredentials(email, password) {
 
 // generer le token
 function generateToken(user) {
-    jwt.sign(
+    return jwt.sign(
         //les info minimal a envoyer au client => payload
         {sub: user.id, role: user.role},
         process.env.JWT_TOKEN, // la clé secrete pour "signer" le token
